@@ -1,11 +1,8 @@
 from fastapi import FastAPI
+from fastapi.responses import FileResponse
 
 app = FastAPI()
 
 @app.get("/")
-def root():
-    return {"message": "Hello, MIREA!"}
-
-@app.get("/hello")
-def hello():
-    return {"text": "This is second endpoint"}
+async def get_html():
+    return FileResponse("index.html")
