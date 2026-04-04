@@ -1,43 +1,44 @@
 from fastapi import FastAPI
 from fastapi.responses import FileResponse
-from models import User, UserWithAge, Feedback
+from models import UserWithId, User, Calculate, Feedback  
 
 app = FastAPI()
 
-user = User(name="Эльхан Поладов", id=1)
-feedbacks = []
 
+feedbacks_db = [] 
+
+
+# Задание 1.2 
 @app.get("/")
-async def get_html():
+def serve_html():
     return FileResponse("index.html")
 
+# Задание 1.3 
 @app.post("/calculate")
-async def calculate(num1: int, num2: int):
-    result = num1 + num2
+def calculate_sum(data: Calculate): 
+    result = data.num1 + data.num2
     return {"result": result}
 
+# Задание 1.4 
+user = UserWithId(name="Вася Пупкин", id=1) 
 @app.get("/users")
-async def get_user():
+def get_user():
     return user
 
+# Задание 1.5
 @app.post("/user")
-async def check_user(user_data: UserWithAge):
-    is_adult = user_data.age >= 18
+def create_user(user: User):
+    is_adult = user.age >= 18
     return {
-        "name": user_data.name,
-        "age": user_data.age,
+        "name": user.name,
+        "age": user.age,
         "is_adult": is_adult
     }
 
+# Задание 2.1 2.2
 @app.post("/feedback")
-async def create_feedback(feedback: Feedback):
-
-    feedbacks.append(feedback)
-
+def submit_feedback(feedback: Feedback):
+    feedbacks_db.append(feedback.dict())
     return {
         "message": f"Спасибо, {feedback.name}! Ваш отзыв сохранён."
     }
-
-@app.get("/feedbacks")
-async def get_all_feedbacks():
-    return {"feedbacks": feedbacks, "count": len(feedbacks)}

@@ -1,40 +1,33 @@
-from pydantic import BaseModel, field_validator
-import re
+from pydantic import BaseModel, Field, field_validator
 
-class User(BaseModel):
+
+#1.4
+class UserWithId(BaseModel):
     name: str
     id: int
 
-class UserWithAge(BaseModel):
+#1.5 
+class User(BaseModel):
     name: str
     age: int
 
+# 1.3
+class Calculate(BaseModel):
+    num1: int
+    num2: int
+
+#задание 2.1 2.2
 class Feedback(BaseModel):
-    name: str
-    message: str
-
-    @field_validator('name')
-    def validate_name(cls, v):
-
-        if len(v) < 2:
-            raise ValueError('Имя должно содержать минимум 2 символа')
-        if len(v) > 50:
-            raise ValueError('Имя должно содержать максимум 50 символов')
-        return v
+    name: str = Field(min_length=2, max_length=50)
+    message: str = Field(min_length=10, max_length=500)
     
-    @field_validator('message')
-    def validate_message(cls, v):
-        if len(v) < 10:
-            raise ValueError('Сообщение должно содержать минимум 10 символов')
-        if len(v) > 500:
-            raise ValueError('Сообщение должно содержать максимум 500 символов')
+    @field_validator("message")
+    @classmethod
+    def check_bad_words(cls, value: str) -> str:
+        bad_words = ["кринж", "рофл", "вайб"]
+        lower_message = value.lower()
+        for bad_word in bad_words:
+            if bad_word in lower_message:
+                raise ValueError("Использование недопустимых слов")
         
-        forbidden_words = ['крингк', 'рофл', 'вайб']
-        
-        message_lower = v.lower()
-
-        for word in forbidden_words:
-            if word in message_lower:
-                raise ValueError('Использование недопустимых слов')
-        
-        return v
+        return value

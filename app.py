@@ -1,8 +1,9 @@
-
 from fastapi import FastAPI
 
-my_application = FastAPI()
+# Создаем экземпляр приложения (переменная называется app)
+app = FastAPI()
 
-@my_application.get("/")
-async def root():
+# Определяем маршрут для корневого URL "/"
+@app.get("/")
+def read_root():
     return {"message": "Добро пожаловать в моё приложение FastAPI!"}
